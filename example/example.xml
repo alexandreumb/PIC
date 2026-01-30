@@ -1,0 +1,10 @@
+<library path="example">
+    <class  name="example/Robot4FarmersHardware" 
+            type="example::Robot4FarmersHardware" 
+            base_class_type="hardware_interface::SystemInterface"> 
+    </class>
+    <class  name="example/ExampleHardware" 
+            type="example::ExampleHardware" 
+            base_class_type="hardware_interface::SensorInterface"> 
+    </class>
+</library>

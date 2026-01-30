@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+  <xacro:property name="use_sim" value="true"/>
+
+  <xacro:macro name="Robot4Farmers" params="">
+    <ros2_control name="robot2_hardware" type="system"> 
+      <hardware> 
+        <plugin>example/Robot4FarmersHardware</plugin>
+      </hardware>
+
+      <joint name="left_front_wheel_joint"> 
+        <state_interface name="position"/>
+        <command_interface name="position"/>
+      </joint>
+
+      <joint name="right_front_wheel_joint"> 
+        <state_interface name="position"/>
+        <command_interface name="position"/>
+      </joint>
+
+      <joint name="left_rear_wheel_joint"> 
+        <state_interface name="velocity"/>
+        <state_interface name="position"/>
+        <command_interface name="velocity"/>
+      </joint>
+
+      <joint name="right_rear_wheel_joint"> 
+        <state_interface name="velocity"/>
+        <state_interface name="position"/>
+        <command_interface name="velocity"/>
+      </joint>
+    </ros2_control>
+
+    <ros2_control name="gps_hardware" type="sensor"> 
+      <hardware> 
+        <plugin>example/ExampleHardware</plugin>
+      </hardware>
+
+      <sensor name="gps_sensor">
+        <state_interface name="latitude"/>
+        <state_interface name="longitude"/>
+        <state_interface name="altitude"/>
+      </sensor>
+    </ros2_control>
+  </xacro:macro>
+</robot>

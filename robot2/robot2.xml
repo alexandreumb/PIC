@@ -1,0 +1,6 @@
+<library path="robot2">
+    <class  name="robot2/Robot4FarmersHardware" 
+            type="robot2::Robot4FarmersHardware" 
+            base_class_type="hardware_interface::SystemInterface"> 
+    </class>
+</library>
