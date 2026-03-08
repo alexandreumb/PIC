@@ -1,0 +1,7 @@
+<library path="gps_sensor_broadcaster">
+  <class name="gps_sensor_broadcaster/GPSSensorBroadcaster"
+         type="gps_sensor_broadcaster::GPSSensorBroadcaster"
+         base_class_type="controller_interface::ControllerInterface">
+    <description>GPS sensor broadcaster controller</description>
+  </class>
+</library>

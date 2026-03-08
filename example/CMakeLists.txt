@@ -46,6 +46,9 @@ install(PROGRAMS
 add_executable(camera1_sub src/camera1_sub.cpp)
 ament_target_dependencies(camera1_sub rclcpp OpenCV fixed_size_msgs)
 target_link_libraries(camera1_sub iceoryx_hoofs::iceoryx_hoofs iceoryx_posh::iceoryx_posh)
+# add to CMakeLists.txt temporarily
+# target_compile_options(camera1_sub PRIVATE -fsanitize=address)
+# target_link_options(camera1_sub PRIVATE -fsanitize=address)
 
 add_executable(camera2_pub src/camera2_pub.cpp)
 ament_target_dependencies(camera2_pub rclcpp OpenCV fixed_size_msgs realsense2)

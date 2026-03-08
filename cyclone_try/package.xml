@@ -1,0 +1,18 @@
+<package format="3">
+  <name>cyclone_try</name>
+  <version>0.0.0</version>
+  <description>Iceoryx shared memory test</description>
+
+  <maintainer email="alexandre@todo.todo">alexandre</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>fixed_size_msgs</depend>
+  <depend>opencv</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

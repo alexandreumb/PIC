@@ -9,23 +9,13 @@ int main(int argc, char **argv)
     rclcpp::init(argc, argv);
 
     auto node = std::make_shared<rclcpp::Node>("camera2_node");
-    auto pub = std::make_shared<BurgerPublisher<fixed_size_msgs::msg::Image8Mb>>(node, "camera2", false);
-    int32_t frequency = 5;
+    auto pub = std::make_shared<BurgerPublisher<fixed_size_msgs::msg::Image8Mb>>(node, "camera2", true);
+    int32_t frequency = 30;
     std::unique_ptr<rclcpp::Rate> rate = std::make_unique<rclcpp::Rate>(frequency);
-    int i = 1;
 
     while (rclcpp::ok())
     {
-        if (i%10 == 0)
-        {
-            frequency += 1;
-            rate = std::make_unique<rclcpp::Rate>(frequency);
-        }
         pub->publish_image(frequency);
-        i += 1;
-        if (i == 1000){
-            break;
-        }
         rate->sleep();
     }
 

@@ -81,7 +81,7 @@ public:
     // --- Timestamp calculation ---
     auto msg_timestamp = image->timestamp;
     auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(
-      std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+      std::chrono::steady_clock::now().time_since_epoch()).count();
     
     auto diff = now - msg_timestamp;  // nanoseconds
     average_round_time_ += diff;

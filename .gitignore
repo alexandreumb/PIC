@@ -1,0 +1,20 @@
+# Build artifacts
+build/
+install/
+log/
+
+# ROS
+*.bag
+*.db3
+rosbag2_*
+
+# IDEs
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store

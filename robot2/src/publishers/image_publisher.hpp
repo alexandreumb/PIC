@@ -43,7 +43,7 @@ public:
       frame_size_ = static_cast<size_t>(img_.step[0] * img_.rows);
     } else
     {
-      cap_.open(0);
+      cap_.open(2);
       if (!cap_.isOpened())
       {
         RCLCPP_ERROR(logger_, "Failed to open camera!");
@@ -54,46 +54,64 @@ public:
   }
 
   void publish_image(int32_t freq)
-  {
-
-    auto image_msg = pub_->borrow_loaned_message();
-    auto msg_size = image_msg.get().data.size();
-
-    if (!robot_) 
     {
-      if (frame_size_ > msg_size) {
-        RCLCPP_ERROR(
-          logger_, "incompatible image sizes. frame %zu, msg %zu", frame_size_, msg_size);
-        return;
-      }
-    } else {
-      cap_ >> img_;
-      if (img_.empty()) return;
+      auto image_msg = pub_->borrow_loaned_message();
+      auto & msg = image_msg.get();
+      auto msg_size = msg.data.size();
 
-      frame_size_ = static_cast<size_t>(img_.step[0] * img_.rows);
-      if (frame_size_ > msg_size) {
-        RCLCPP_ERROR(
-          logger_, "incompatible image sizes. frame %zu, msg %zu", frame_size_, msg_size);
-        return;
+      if (!robot_) 
+      {
+        if (frame_size_ > msg_size) {
+          RCLCPP_ERROR(
+            logger_, "incompatible image sizes. frame %zu, msg %zu", frame_size_, msg_size);
+          return;
+        }
+
+        msg.is_bigendian = false;
+        msg.step = static_cast<uint32_t>(img_.cols * img_.elemSize());
+        msg.width = img_.cols;
+        msg.height = img_.rows;
+        msg.frequency = freq;
+        memcpy(msg.data.data(), img_.data, frame_size_);
+
+      } else {
+
+        // Get frame dimensions from first capture to validate size
+        if (width_ == 0) {
+          cv::Mat tmp;
+          cap_ >> tmp;
+          if (tmp.empty()) return;
+          width_ = tmp.cols;
+          height_ = tmp.rows;
+          frame_size_ = static_cast<size_t>(tmp.step[0] * tmp.rows);
+          if (frame_size_ > msg_size) {
+            RCLCPP_ERROR(
+              logger_, "incompatible image sizes. frame %zu, msg %zu", frame_size_, msg_size);
+            return;
+          }
+        }
+
+        // Wrap shared memory buffer as cv::Mat — OpenCV writes directly into shared memory
+        cv::Mat frame_in_shm(height_, width_, CV_8UC3, msg.data.data());
+        cap_ >> frame_in_shm;  // zero-copy: camera writes directly into shared memory
+        if (frame_in_shm.empty()) return;
+
+        msg.is_bigendian = false;
+        msg.step = static_cast<uint32_t>(width_ * frame_in_shm.elemSize());
+        msg.width = width_;
+        msg.height = height_;
+        msg.frequency = freq;
+        frame_size_ = static_cast<size_t>(msg.step * height_);
       }
+
+      RCLCPP_INFO(logger_, "frame_size_ = %zu, msg.data.size() = %zu", frame_size_, msg_size);
+
+      msg.timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count();
+
+      pub_->publish(std::move(image_msg));
+      ++count_;
     }
-
-    RCLCPP_INFO(logger_, "frame_size_ = %zu, msg.data.size() = %zu", frame_size_, msg_size);
-
-    auto & msg = image_msg.get();
-    msg.is_bigendian = false;
-    msg.step = static_cast<uint32_t>(img_.cols * img_.elemSize());
-    msg.width = img_.cols;
-    msg.height = img_.rows;
-    msg.frequency = freq;
-    memcpy(msg.data.data(), img_.data, frame_size_);
-
-    image_msg.get().timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(
-      std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-
-    pub_->publish(std::move(image_msg));
-    ++count_;
-  }
 
   typename rclcpp::Publisher<MsgT>::SharedPtr get_publisher() { return pub_; }
 
@@ -106,6 +124,8 @@ private:
   size_t frame_size_;
   size_t count_;
   bool robot_;
+  int width_ = 0;   // add this
+  int height_ = 0;  // add this
 };
 
 #endif  // BURGER_PUBLISHER_HPP_
