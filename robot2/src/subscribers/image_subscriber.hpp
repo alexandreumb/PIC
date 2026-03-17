@@ -30,7 +30,7 @@ public:
   {
     sub_ = node->create_subscription<MsgT>(
         topic,
-        rclcpp::QoS(5).best_effort(),
+        rclcpp::QoS(1).best_effort().durability_volatile(),
         [this](std::shared_ptr<MsgT> msg){ this->process_image(msg); });
 
     image_buffer_.resize(12582912); // 2048 * 2048 * 3

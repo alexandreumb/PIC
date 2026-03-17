@@ -11,9 +11,9 @@ int main(int argc, char **argv)
     rclcpp::init(argc, argv);
 
     auto node = std::make_shared<rclcpp::Node>("camera2_sub_node");
-    auto sub = std::make_shared<BurgerSubscriber<fixed_size_msgs::msg::Image8Mb>>(node, "camera2");
+    auto sub = std::make_shared<BurgerSubscriber<fixed_size_msgs::msg::Image8Mb>>(node, "camera");
 
-    rclcpp::Rate rate(500);
+    rclcpp::Rate rate(1000);
 
     rclcpp::MessageInfo info;
     auto msg = std::make_shared<fixed_size_msgs::msg::Image8Mb>();

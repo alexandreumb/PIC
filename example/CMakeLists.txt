@@ -50,13 +50,40 @@ target_link_libraries(camera1_sub iceoryx_hoofs::iceoryx_hoofs iceoryx_posh::ice
 # target_compile_options(camera1_sub PRIVATE -fsanitize=address)
 # target_link_options(camera1_sub PRIVATE -fsanitize=address)
 
-add_executable(camera2_pub src/camera2_pub.cpp)
-ament_target_dependencies(camera2_pub rclcpp OpenCV fixed_size_msgs realsense2)
-target_link_libraries(camera2_pub iceoryx_hoofs::iceoryx_hoofs iceoryx_posh::iceoryx_posh ${realsense2_LIBRARY})
+add_executable(camera_fastrtps_pub src/camera_fastrtps_pub.cpp)
+ament_target_dependencies(camera_fastrtps_pub rclcpp OpenCV fixed_size_msgs realsense2)
+target_link_libraries(camera_fastrtps_pub iceoryx_hoofs::iceoryx_hoofs iceoryx_posh::iceoryx_posh ${realsense2_LIBRARY})
 
-add_executable(camera2_sub src/camera2_sub.cpp)
-ament_target_dependencies(camera2_sub rclcpp OpenCV fixed_size_msgs)
-target_link_libraries(camera2_sub iceoryx_hoofs::iceoryx_hoofs iceoryx_posh::iceoryx_posh)
+add_executable(camera_fastrtps_sub src/camera_fastrtps_sub.cpp)
+ament_target_dependencies(camera_fastrtps_sub rclcpp OpenCV fixed_size_msgs)
+target_link_libraries(camera_fastrtps_sub iceoryx_hoofs::iceoryx_hoofs iceoryx_posh::iceoryx_posh)
+
+# ── CycloneDDS camera publisher ───────────────────────────────────────────────
+add_executable(camera_publisher_cyclone
+  src/camera_publisher_cyclone.cpp
+)
+ament_target_dependencies(camera_publisher_cyclone
+  rclcpp
+  fixed_size_msgs
+  OpenCV
+)
+
+# ── CycloneDDS camera subscriber ──────────────────────────────────────────────
+add_executable(camera_subscriber_cyclone
+  src/camera_subscriber_cyclone.cpp
+)
+ament_target_dependencies(camera_subscriber_cyclone
+  rclcpp
+  fixed_size_msgs
+  OpenCV
+)
+
+# ── install all executables ───────────────────────────────────────────────────
+install(TARGETS
+  camera_publisher_cyclone
+  camera_subscriber_cyclone
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 # ----------------------------
 # GPS hardware plugin (for simulation)
@@ -77,7 +104,7 @@ pluginlib_export_plugin_description_file(hardware_interface example.xml)
 # Install targets
 # ----------------------------
 install(TARGETS
-  camera1_pub camera1_sub camera2_pub camera2_sub
+  camera1_pub camera1_sub camera_fastrtps_pub camera_fastrtps_sub
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
