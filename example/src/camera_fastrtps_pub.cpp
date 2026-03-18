@@ -64,16 +64,17 @@ int main(int argc, char ** argv)
 
     while (!stop && rclcpp::ok())
     {
-        #if USE_CLOCK_MONOTONIC
-                msg->timestamp = monotonic_now_ns();
-        #else
-                msg->timestamp = node->now().nanoseconds();
-        #endif
         
         if (!cap.read(frame)) {
             RCLCPP_WARN(node->get_logger(), "Blank frame — skipping");
             continue;
         }
+        
+#if USE_CLOCK_MONOTONIC
+        msg->timestamp = monotonic_now_ns();
+#else
+        msg->timestamp = node->now().nanoseconds();
+#endif
 
         msg->width        = IMG_WIDTH;
         msg->height       = IMG_HEIGHT;
@@ -82,7 +83,7 @@ int main(int argc, char ** argv)
         msg->frequency    = CAM_FREQ_HZ;
 
 #if USE_CLOCK_MONOTONIC
-       msg->publish_timestamp = monotonic_now_ns();
+        msg->publish_timestamp = monotonic_now_ns();
 #else
         msg->publish_timestamp = node->now().nanoseconds();
 #endif

@@ -32,7 +32,6 @@ int main(int argc, char ** argv)
 {
     std::signal(SIGINT,  signal_handler);
     std::signal(SIGTERM, signal_handler);
-FastRTPS
     rclcpp::init(argc, argv);
     auto node = std::make_shared<rclcpp::Node>("camera_publisher_node");
 
